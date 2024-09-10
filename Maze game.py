@@ -11,7 +11,9 @@ class Player(FirstPersonController):
                speed = 10,
                model = 'cube',
                collider = 'box',
-               scale = 1
+               scale = 1,
+               gravity = 0.5,
+               jump_height = 10
           )
 
 class Exit(Entity):
