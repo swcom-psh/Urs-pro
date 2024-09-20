@@ -34,8 +34,7 @@ class Exit(Entity):
           self.player = player # 외부 플레이어의 정보를 Exit 클래스의 self.player 변수 안에 저장합니다.
      
      def update(self):
-          self.playerCollision()
-     
+          self.playerCollision()     
 
      def playerCollision(self): #플레이어와 충돌을 감지하는 메서드 함수를 정의합니다.
         distance = (self.player.position - self.position).length()
@@ -58,13 +57,17 @@ class Warp(Entity):
 
           self.player = player #클래스 외부의 player에 대한 정보를 받아옵니다.
           
-     def update(self): #게임 진행 과정 속 playerCollision 함수를 실행하여 충돌을 확인합니다.
+     def update(self):
+          if self.warp.intersects(player):
+               self.player.position = (95, 3, 90)
+               
+"""      def update(self): #게임 진행 과정 속 playerCollision 함수를 실행하여 충돌을 확인합니다.
           print(player.position) #플레이어의 좌표를 출력하여 좌표를 확인할 수 있습니다.
           self.playerCollision()
 
      def playerCollision(self): #Warp 클래스 안에 플레이어의 충돌판정을 위한 함수(메서드)를 만듭니다.
           if self.warp.intersects(player): #intersects 기능을 이용하여 조건문을 생성합니다.
-               self.player.position = (95,3,90) #플레이어의 좌표를 이동시킵니다.
+               self.player.position = (95,3,90) #플레이어의 좌표를 이동시킵니다. """
 
 class MonsterX(Entity): #클래스 MonsterX를 생성합니다.
      def __init__(self,x,z): 
@@ -74,17 +77,15 @@ class MonsterX(Entity): #클래스 MonsterX를 생성합니다.
                     texture = 'assets/EnemyTexture.png',
                     scale = 0.5,
                     position = (x * 5, 1, z * 5),
-                    collider = 'box'
+                    collider = 'box',
+                    rotation = (0, 90, 0)
                )
           )
           self.player = player
           self.start = self.enemy.position
 
      def update(self):
-          self.enemy.rotation_y = 90
-          self.enemy.set_position((self.enemy.position.x + 5 * time.dt, self.enemy.position.y, self.enemy.position.z ))
-          #객체의 좌표를 수정하여 움직임을 구현합니다.
-          
+          self.enemy.position = (self.enemy.position.x + 5, self.enemy.position.y, self.enemy.position.z)
           if self.enemy.intersects(player):
                self.player.position = (95, 3, 90)
           
@@ -120,10 +121,12 @@ MAP =[
     [11,12,__,14,__,16,__,18,__,10,__,__,__,__,__,__,__,18,__,20],
     [11,__,__,__,__,16,__,18,__,10,11,__,13,__,15,16,17,__,__,20],
     [11,12,__,14,15,16,__,__,__,10,__,12,__,__,15,16,17,18,__,20],
-    [11,__,__,__,__,__,17,18,19,10,__,12,__,14,__,__,__,'x','e',20],
+    [11,__,__,__,__,__,17,18,19,10,__,12,__,14,__,__,__,'x','w',20],
     [11,12,__,14,15,__,__,__,__,__,__,__,__,14,__,16,__,__,__,20],
     [11,12,13,14,15,16,17,18,19,10,11,12,13,14,15,16,17,18,'p',20],    
 ]
+
+
 
 walls = [] # 생성된 wall 객체의 정보를 저장하기 위해 walls 배열을 생성합니다.
 
@@ -160,6 +163,7 @@ Ground = Entity(
      scale = (150,1,150),
      collider = 'mesh'
 )
+
 
 sky = Entity(
     model = 'sphere',
