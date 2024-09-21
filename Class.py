@@ -43,57 +43,6 @@ class Exit(Entity):
              self.clear.visible = True # 탈출 성공 메시지가 보이도록 설정합니다.
              self.player.enabled = False #탈출 성공 메시지가 출력된 후 플레이어가 비활성화됩니다.
 
-class Warp(Entity):
-     def __init__(self, x, z):
-          super().__init__( #Entity의 속성을 그대로 물려받아 초기화하기 위해 작성하는 구문
-               warp = Entity(
-                    model = 'cube',
-                    texture = 'assets/WarpTexture.png', #이 부분은 작성하지 않고 추후에 따로 추가해도됩니다.
-                    position = (x * 5, 0, z * 5),
-                    scale = (5, 5, 5),
-                    collider = 'box'
-               )                          
-          )
-
-          self.player = player #클래스 외부의 player에 대한 정보를 받아옵니다.
-          
-     def update(self):
-          if self.warp.intersects(player):
-               self.player.position = (95, 3, 90)
-               
-"""      def update(self): #게임 진행 과정 속 playerCollision 함수를 실행하여 충돌을 확인합니다.
-          print(player.position) #플레이어의 좌표를 출력하여 좌표를 확인할 수 있습니다.
-          self.playerCollision()
-
-     def playerCollision(self): #Warp 클래스 안에 플레이어의 충돌판정을 위한 함수(메서드)를 만듭니다.
-          if self.warp.intersects(player): #intersects 기능을 이용하여 조건문을 생성합니다.
-               self.player.position = (95,3,90) #플레이어의 좌표를 이동시킵니다. """
-
-class MonsterX(Entity): #클래스 MonsterX를 생성합니다.
-     def __init__(self,x,z): 
-          super().__init__( #Entity 클래스의 속성을 그대로 가져와 enemy를 초기화합니다.
-               enemy = Entity(
-                    model = 'assets/enemy.obj',
-                    texture = 'assets/EnemyTexture.png',
-                    scale = 0.5,
-                    position = (x * 5, 1, z * 5),
-                    collider = 'box',
-                    rotation = (0, 90, 0)
-               )
-          )
-          self.player = player
-          self.start = self.enemy.position
-
-     def update(self):
-          self.enemy.position = (self.enemy.position.x + 5, self.enemy.position.y, self.enemy.position.z)
-          if self.enemy.intersects(player):
-               self.player.position = (95, 3, 90)
-          
-          for i in walls:
-               if self.enemy.intersects(i):
-                    self.enemy.position = self.start
-
-
 def input(key):
     if key == 'escape':
         application.quit()
@@ -127,9 +76,6 @@ MAP =[
 ]
 
 
-
-walls = [] # 생성된 wall 객체의 정보를 저장하기 위해 walls 배열을 생성합니다.
-
 for i in range(len(MAP)):
     for j in range(len(MAP[i])):
             if MAP[i][j]:
@@ -154,7 +100,6 @@ for i in range(len(MAP)):
                     collider = 'box',
                     texture = 'assets/WallTexture.jpg' # assets 폴더안 텍스처 사진을 불러옵니다.
                )
-                walls.append(wall) #wall 객체의 정보를 walls 배열 안에 저장합니다.
          
 Ground = Entity(
      model = 'plane',
