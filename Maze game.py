@@ -56,7 +56,7 @@ class Warp(Entity):
           self.player = player #클래스 외부의 player에 대한 정보를 받아옵니다.
           
      def update(self):
-          if self.warp.intersects(player):
+          if self.warp.intersects(self.player):
                self.player.position = (95, 3, 90)
 
 class MonsterX(Entity): #클래스 MonsterX를 생성합니다.
@@ -132,7 +132,7 @@ for i in range(len(MAP)):
                      warpgate = Warp(i,j) # warpgate 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
                      continue
                 if MAP[i][j] == 'x':
-                     moster = MonsterX(i,j) # monster 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
+                     monster = MonsterX(i,j) # monster 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
                      continue
 
                 wall = Entity(                
