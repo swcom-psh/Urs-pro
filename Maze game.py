@@ -13,7 +13,32 @@ class Player(FirstPersonController):
                collider = 'box',
                scale = 1
           )
+          self.coins = 0 #플레이어의 코인 추가
+          self.cointext = Text(
+               origin = (-7,-18.5),
+               color = color.rgba(255, 255, 255, 100)               
+          )
+          
 
+class Coin(Entity):
+     def __init__(self,i,j):
+          super().__init__(
+               model = 'circle',
+               color = color.yellow,
+               scale = 0.5,
+               position = (i*5, 0.5, j*5),
+               double_sided = True,
+               collider = 'box'
+          )
+          
+     def update(self):
+          self.rotation_y = self.rotation_y + 100 * time.dt
+          if self.intersects(player):
+               player.coins += 1
+               player.cointext.text = f'Coins: {player.coins}'
+               destroy(self)
+          
+          
 class Exit(Entity):
      def __init__(self, x, z): # for문에서 전달한 i, j값을 Exit 클래스의 x, z 변수안에 저장
           super().__init__(
@@ -46,7 +71,8 @@ class Warp(Entity):
           super().__init__( #Entity의 속성을 그대로 물려받아 초기화하기 위해 작성하는 구문
                warp = Entity(
                     model = 'cube',
-                    texture = 'assets/WallTexture.jpg', #이 부분은 작성하지 않고 추후에 따로 추가해도됩니다.
+                    color = color.rgb32(165,82,42),
+                    texture = 'brick', #이 부분은 작성하지 않고 추후에 따로 추가해도됩니다.
                     position = (x * 5, 1.5, z * 5),
                     scale = (5, 5, 5),
                     collider = 'box'
@@ -71,24 +97,36 @@ class MonsterX(Entity): #클래스 MonsterX를 생성합니다.
                     rotation = (0, 90, 0)
                )
           )
+          self.gameover = Text( #텍스트 객체를 생성하고, self.clear 변수에 저장합니다.
+               text = 'Game Over', #출력할 메시지를 작성합니다.
+               font = 'assets/강원교육튼튼.ttf', #폰트를 불러옵니다.
+               color = color.red,
+               scale = 2, #텍스트의 크기
+               origin = (0,0), #텍스트의 좌표(2차원)
+               visible = False #텍스트는 우선 눈에 보이지 않게 하였습니다.
+               )
+          
           self.player = player
           self.start = self.enemy.position
 
      def update(self):
           self.enemy.position = (self.enemy.position.x + 5 * time.dt, self.enemy.position.y, self.enemy.position.z)
-          if self.enemy.intersects(player):
-               self.player.position = (95, 3, 90)
+          if self.enemy.intersects(player): #게임 종료 조건 추가
+               self.player.enabled = False
+               self.enemy.enabled = False 
+               self.gameover.visible = True
           
           for i in walls:
                if self.enemy.intersects(i):
                     self.enemy.position = self.start
 
 
-def input(key):
-    if key == 'escape':
-        application.quit()
 
-#EditorCamera()
+def input(key):
+     if key == 'escape':
+          application.quit()
+
+EditorCamera()
 player = Player()
 
 
@@ -116,52 +154,47 @@ MAP =[
 ]
 
 
-
+coins = []
 walls = [] # 생성된 wall 객체의 정보를 저장하기 위해 walls 배열을 생성합니다.
 
 for i in range(len(MAP)):
     for j in range(len(MAP[i])):
-            if MAP[i][j]:
-                if MAP[i][j] == 'p':
+          if MAP[i][j]:
+               if MAP[i][j] == 'p':
                     player.position = (i * 5, 0, j * 5)
                     continue
-                if MAP[i][j] == 'e':
-                     exitdoor = Exit(i,j) # exitdoor 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
-                     continue
-                if MAP[i][j] == 'w': 
-                     warpgate = Warp(i,j) # warpgate 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
-                     continue
-                if MAP[i][j] == 'x':
-                     monster = MonsterX(i,j) # monster 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
-                     continue
+               if MAP[i][j] == 'e':
+                    exitdoor = Exit(i,j) # exitdoor 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
+                    continue
+               if MAP[i][j] == 'w': 
+                    warpgate = Warp(i,j) # warpgate 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
+                    continue
+               if MAP[i][j] == 'x':
+                    monster = MonsterX(i,j) # monster 객체를 생성하고, Exit 클래스 호출하며 i, j 값 전달     
+                    continue
 
-                wall = Entity(                
+               wall = Entity(                
                     model = 'cube',
-                    #color = color.black90,
+                    color = color.rgb32(165,82,42),
                     position = (i * 5, 1.5, j * 5),
                     scale = (5,5,5),
                     collider = 'box',
-                    texture = 'assets/WallTexture.jpg' # assets 폴더안 텍스처 사진을 불러옵니다.
-               )
-                walls.append(wall) #wall 객체의 정보를 walls 배열 안에 저장합니다.
+                    texture = 'brick' # assets 폴더안 텍스처 사진을 불러옵니다.
+                    )
+               walls.append(wall) #wall 객체의 정보를 walls 배열 안에 저장합니다.
+          coin = Coin(i,j) # 길목에 모두 코인 배치
+          coins.append(coin) # 코인들 배열 저장
+          
          
 Ground = Entity(
      model = 'plane',
-     color = color.rgba(18,128,128,0),
+     texture = 'grass',  #질감 종류: brick(벽돌), grass(풀밭), white_cube(하얀큐브), noise(노이즈패턴), sky_sunset(노을이지는하늘), shore(물가풍경)
      position = (50,0,50),
      scale = (150,1,150),
      collider = 'mesh'
 )
 
 
-sky = Entity(
-    model = 'sphere',
-    position = (0,0,0),
-    scale = (400,400,400),
-    collider = 'mesh',
-    texture = 'assets\stars.png',
-    double_sided = True # 물체의 양면을 모두 렌더링합니다.
-
-)
+Sky(texture = "sky_sunset")
 
 app.run()
