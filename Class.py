@@ -14,6 +14,25 @@ class Player(FirstPersonController):
                scale = 1
           )
 
+#coin은 어떻게 만들죠?
+
+class Coin(Entity):
+     def __init__(self, x, z):
+          super().__init__(
+               model = 'circle',
+               color = color.yellow,
+               scale = (1, 1, 1),
+               position = (x * 5, 0.5, z * 5),
+               double_sided = True,
+               collider = 'box'
+          )
+     def update(self):
+          self.rotation_y += 1
+          if self.intersects(player):
+               destroy(self)
+
+
+
 class Exit(Entity):
      def __init__(self, x, z): # for문에서 전달한 i, j값을 Exit 클래스의 x, z 변수안에 저장
           super().__init__(
@@ -59,6 +78,7 @@ class Warp(Entity):
      def update(self):
           if self.warp.intersects(self.player):
                self.player.position = (95, 3, 90)
+
 
 class MonsterX(Entity): #클래스 MonsterX를 생성합니다.
      def __init__(self,x,z): 
@@ -112,7 +132,7 @@ MAP =[
     [11,12,__,14,__,'w',__,18,__,10,__,__,__,__,__,__,__,18,__,20],
     [11,__,__,__,__,16,__,18,__,10,11,__,'w',__,15,16,17,__,__,20],
     [11,12,__,14,15,'w',__,__,__,10,__,12,__,__,15,16,'w',18,__,20],
-    [11,__,__,__,__,__,17,18,19,10,__,12,__,'w',__,__,__,'x',__,20],
+    [11,__,__,__,__,__,17,18,19,10,__,12,__,'w',__,__,__,__,'w',20],
     [11,12,__,14,'w',__,__,__,__,__,__,__,__,14,__,'w',__,__,__,20],
     [11,12,13,14,15,16,17,18,19,10,11,12,13,14,15,16,17,18,'p',20],    
 ]
@@ -146,6 +166,12 @@ for i in range(len(MAP)):
                     texture = 'brick' # assets 폴더안 텍스처 사진을 불러옵니다.
                )
                 walls.append(wall) #wall 객체의 정보를 walls 배열 안에 저장합니다.
+            else:
+               coin = Coin(i, j)
+
+
+
+                
          
          
 Ground = Entity(
@@ -153,18 +179,11 @@ Ground = Entity(
      color = color.gray,
      position = (50,0,50),
      scale = (150,1,150),
-     collider = 'mesh'
+     collider = 'mesh',
+     texture = 'grass'
 )
 
+Sky(texture = "sky_sunset")
 
-sky = Entity(
-    model = 'sphere',
-    position = (0,0,0),
-    scale = (400,400,400),
-    collider = 'mesh',
-    texture = 'assets\stars.png',
-    double_sided = True # 물체의 양면을 모두 렌더링합니다.
-
-)
 
 app.run()
