@@ -126,7 +126,7 @@ def input(key):
      if key == 'escape':
           application.quit()
 
-#EditorCamera()
+EditorCamera()
 player = Player()
 
 
